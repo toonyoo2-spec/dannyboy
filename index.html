@@ -4,10 +4,10 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="robots" content="noindex, nofollow">
-<meta property="og:title" content="대니보니 포트폴리오">
+<meta property="og:title" content="대니보이 포트폴리오">
 <meta property="og:description" content="영상 편집, 2D, DI, 사운드까지 직접 마감한 작업 모음">
 <style>img{max-width:100%}[hidden]{display:none!important}</style>
-<title>대니보니 포트폴리오</title>
+<title>대니보이 포트폴리오</title>
 <meta name="claude:viewport-fit-sides" content="cover">
 <meta name="description" content="영상 편집, 2D, DI, 사운드까지 후반 작업 전 공정을 직접 마감한 영상 작업 포트폴리오">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Inter+Tight:wght@500;600;700&family=Noto+Sans+KR:wght@400;500;700&display=swap">
@@ -22,6 +22,7 @@
   --muted: #555b66;
   --faint: #a6abb3;
   --accent: #101215;
+  --blend: #ffffff;
   --accent-ink: #ffffff;
   --scrim: rgba(8, 9, 11, .55);
   --on-media: #f5f3ee;
@@ -76,26 +77,26 @@ h1, h2, h3 { text-wrap: balance; }
 .brand b { font-family: var(--font-display); font-weight: 700; font-size: 18px; letter-spacing: .01em; }
 @media (max-width: 860px) { .brand .mono { display: none; } }
 
-/* 히어로 */
-.hero { padding-block: 96px 40px; }
-.hero .wrap { display: grid; grid-template-columns: minmax(0, 1fr); gap: 56px; }
+/* 히어로: 화면 폭을 채우는 대문자 타이틀이 릴 프레임 위로 겹쳐 들어간다 */
+.hero { padding-block: 56px 0; }
+.hero-top { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline; gap: 10px 32px; }
+.hero .lead { font-size: clamp(17px, 1.7vw, 22px); font-weight: 500; letter-spacing: -.02em; }
 .hero h1 {
-  font-family: var(--font-display); font-weight: 700;
-  font-size: clamp(34px, 6.4vw, 88px); line-height: 1.14; letter-spacing: -.05em;
-  margin-top: 18px;
+  position: relative; z-index: 2; pointer-events: none; white-space: nowrap;
+  font-family: var(--font-display); font-weight: 700; text-transform: uppercase;
+  font-size: clamp(50px, calc(19.6vw - 8px), 226px); line-height: .86; letter-spacing: -.055em;
+  margin: 32px 0 -.37em -.04em;
+  color: var(--blend); mix-blend-mode: difference;
 }
-.hero h1 span { color: var(--faint); }
-.hero .lead { margin-top: 28px; color: var(--muted); max-width: 34em; font-size: 17px; }
-.scope { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); margin-top: 40px; max-width: 680px; border-top: 1px solid var(--fg); }
-.scope div { padding: 14px 12px 0 0; }
-.scope dt { font-family: var(--font-mono); font-size: 12px; letter-spacing: .08em; color: var(--accent); }
-.scope dd { margin: 4px 0 0; font-size: 14px; }
-dl { margin: 0; }
-@media (max-width: 960px) {
-  .hero { padding-block: 44px 40px; }
-  .hero .wrap { grid-template-columns: minmax(0, 1fr); gap: 36px; }
-}
-@media (max-width: 460px) { .scope { grid-template-columns: repeat(2, minmax(0, 1fr)); row-gap: 6px; } }
+.featured { position: relative; z-index: 1; }
+.featured .tc { position: absolute; top: 14px; right: 16px; z-index: 1; color: var(--on-media); }
+
+/* 역할 티커 */
+.ticker { margin-top: 80px; background: var(--fg); color: var(--bg); overflow: hidden; padding-block: 16px; }
+.ticker-in { display: flex; width: max-content; animation: tick 30s linear infinite; }
+.ticker span { font-family: var(--font-display); font-weight: 700; font-size: clamp(24px, 4vw, 52px); letter-spacing: -.03em; text-transform: uppercase; white-space: nowrap; padding-right: .5em; }
+.ticker i { font-style: normal; opacity: .35; padding-inline: .35em; }
+@keyframes tick { to { transform: translateX(-50%); } }
 
 /* 16:9 프레임 (공통) */
 .frame {
@@ -149,10 +150,10 @@ dl { margin: 0; }
 
 
 footer { margin-top: 120px; border-top: 1px solid var(--fg); padding-block: 48px 28px; }
-.wordmark { flex: 0 0 100%; margin: 0 0 28px -.04em; font-family: var(--font-display); font-weight: 700; font-size: clamp(64px, 17.5vw, 236px); line-height: 1; letter-spacing: -.07em; }
+.wordmark { flex: 0 0 100%; margin: 0 0 28px -.04em; font-family: var(--font-display); font-weight: 700; font-size: clamp(50px, calc(19.6vw - 8px), 226px); line-height: .9; letter-spacing: -.06em; text-transform: uppercase; }
 @keyframes rise { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: none; } }
-.hero h1, .hero .lead, .scope, .featured { animation: rise .9s cubic-bezier(.2, .7, .2, 1) both; }
-.hero .lead { animation-delay: .08s; } .scope { animation-delay: .16s; } .featured { animation-delay: .24s; }
+.hero-top, .hero h1, .featured { animation: rise .9s cubic-bezier(.2, .7, .2, 1) both; }
+.hero h1 { animation-delay: .08s; } .featured { animation-delay: .18s; }
 footer .wrap { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px 24px; }
 
 /* 플레이어 */
@@ -178,27 +179,23 @@ footer .wrap { display: flex; flex-wrap: wrap; justify-content: space-between; g
 
 <div class="top">
   <div class="wrap">
-    <a class="brand" href="#top"><b>대니보니</b><span class="mono">Portfolio</span></a>
+    <a class="brand" href="#top"><b>대니보이</b><span class="mono">Portfolio</span></a>
   </div>
 </div>
 
 <main id="top">
   <section class="hero">
     <div class="wrap">
-      <div>
-        <p class="mono">Video Editing / 2D / DI / Sound</p>
-        <h1><span>편집부터 2D, DI, 사운드까지</span> 한 사람이 끝까지 마감합니다.</h1>
-        <p class="lead">브랜드 필름, 뷰티 광고, 패션 필름, 제품 홍보, 교육 콘텐츠까지. 이 페이지의 영상은 모두 직접 편집하고 마감한 결과물입니다.</p>
-        <dl class="scope">
-          <div><dt>EDIT</dt><dd>영상 편집</dd></div>
-          <div><dt>2D</dt><dd>2D 그래픽</dd></div>
-          <div><dt>DI</dt><dd>색보정</dd></div>
-          <div><dt>SOUND</dt><dd>사운드</dd></div>
-        </dl>
+      <div class="hero-top">
+        <p class="mono">Video Editor</p>
+        <p class="lead">편집, 2D, 색보정, 사운드. 처음부터 끝까지 혼자 다 합니다.</p>
       </div>
+      <h1 aria-label="올인원 에디터">All-in-one<br>Editor</h1>
       <div class="featured" id="featured"></div>
     </div>
   </section>
+
+  <div class="ticker" aria-hidden="true"><div class="ticker-in"><span>Edit<i>/</i>2D Graphic<i>/</i>DI<i>/</i>Sound<i>/</i>Edit<i>/</i>2D Graphic<i>/</i>DI<i>/</i>Sound<i>/</i>Edit<i>/</i>2D Graphic<i>/</i>DI<i>/</i>Sound<i>/</i></span><span>Edit<i>/</i>2D Graphic<i>/</i>DI<i>/</i>Sound<i>/</i>Edit<i>/</i>2D Graphic<i>/</i>DI<i>/</i>Sound<i>/</i>Edit<i>/</i>2D Graphic<i>/</i>DI<i>/</i>Sound<i>/</i></span></div></div>
 
 
   <div id="works"></div>
@@ -208,8 +205,8 @@ footer .wrap { display: flex; flex-wrap: wrap; justify-content: space-between; g
 
 <footer>
   <div class="wrap">
-    <p class="wordmark" aria-hidden="true">대니보니</p>
-    <span class="mono">대니보니 포트폴리오</span>
+    <p class="wordmark" aria-hidden="true">Dannyboy</p>
+    <span class="mono">대니보이 포트폴리오</span>
     <span class="mono" id="count"></span>
   </div>
 </footer>
@@ -313,11 +310,30 @@ $("works").innerHTML = CATS.map((c) => `
 
 $("count").textContent = `${LIST.length} works · ${CATS.length} categories`;
 
-const f = LIST.find((w) => w.id === FEATURED) || LIST[0];
-$("featured").innerHTML = `<a class="card" href="${yt(f.id)}" target="_blank" rel="noopener" data-i="${LIST.indexOf(f)}">
-  <span class="frame"><img src="${thumb(f.id)}" alt=""><span class="play">${playLabel}</span></span></a>
-  <div class="cap"><span class="mono">대표작 · ${esc(f.cat.client)}</span><span class="mono">${esc(f.title)}</span></div>`;
-
+/* 히어로 릴: 썸네일을 컷 편집하듯 넘기고, 누르면 지금 보이는 영상이 재생된다 */
+const feat = $("featured");
+feat.innerHTML = `<a class="card" target="_blank" rel="noopener"><span class="frame"><img alt=""><span class="mono tc">00:00:00:00</span><span class="play">${playLabel}</span></span></a>
+  <div class="cap"><span class="mono" id="f-cat"></span><span class="mono" id="f-title"></span></div>`;
+const fa = feat.querySelector("a"), fimg = feat.querySelector("img"), ftc = feat.querySelector(".tc");
+let fi = Math.max(0, LIST.findIndex((w) => w.id === FEATURED));
+const cut = () => {
+  const w = LIST[fi];
+  fimg.src = thumb(w.id); fa.href = yt(w.id); fa.dataset.i = fi;
+  $("f-cat").textContent = w.cat.name; $("f-title").textContent = w.title;
+};
+cut();
+if (!matchMedia("(prefers-reduced-motion: reduce)").matches) {
+  let hold = false; const t0 = performance.now();
+  feat.addEventListener("pointerenter", () => (hold = true));
+  feat.addEventListener("pointerleave", () => (hold = false));
+  setInterval(() => { if (hold || !$("modal").hidden || document.hidden) return; fi = (fi + 1) % LIST.length; cut(); }, 1100);
+  const tick = (now) => {
+    const f = Math.floor(((now - t0) / 1000) * 24);
+    ftc.textContent = [Math.floor(f / 86400), Math.floor(f / 1440) % 60, Math.floor(f / 24) % 60, f % 24].map(pad).join(":");
+    requestAnimationFrame(tick);
+  };
+  requestAnimationFrame(tick);
+}
 
 /* 페이지 안 재생 (외부 호스팅에서만 동작. 아티팩트에서는 유튜브 새 탭으로 연결) */
 if (EMBED) {
