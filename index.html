@@ -156,7 +156,13 @@ footer .wrap { display: flex; flex-wrap: wrap; justify-content: space-between; g
 .live-note b { font-family: var(--font-mono); font-weight: 500; text-decoration: underline; text-underline-offset: 3px; overflow-wrap: anywhere; }
 /* 제자리 재생: 썸네일 자리에 플레이어가 들어간다 */
 .frame iframe { position: absolute; inset: 0; z-index: 2; width: 100%; height: 100%; border: 0; background: #000; }
-.card.playing { cursor: default; }
+.card.playing { cursor: default; grid-column: 1 / -1; }
+.grid[data-n="1"] .card.playing { grid-template-columns: minmax(0, 1fr); gap: 14px; }
+.unmute {
+  position: absolute; left: 14px; bottom: 14px; z-index: 3; display: inline-flex; align-items: center; gap: 8px;
+  padding: 10px 16px; border-radius: 999px; background: #fff; color: #0a0a0a;
+  font-family: var(--font-body); font-size: 14px; font-weight: 700; box-shadow: 0 6px 24px rgba(0, 0, 0, .25);
+}
 .card.playing .play, .card.playing .frame::after { display: none; }
 
 @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } * { transition: none !important; animation: none !important; } }
@@ -309,31 +315,70 @@ if (!matchMedia("(prefers-reduced-motion: reduce)").matches) {
   setInterval(() => { if (hold || playing === fa || document.hidden) return; fi = (fi + 1) % LIST.length; cut(); }, 1600);
 }
 
-/* 제자리 재생: 누르면 그 썸네일 자리에서 바로 재생. 다른 영상을 누르면 이전 것은 멈추고 썸네일로 돌아간다.
+/* 제자리 재생: 누르면 그 자리가 한 줄 전체로 펼쳐지며 바로 재생된다. 다른 영상을 누르면 이전 것은 멈춘다.
+   소리 있는 자동재생을 막는 브라우저(사파리, 휴대폰)에서는 무음으로 먼저 재생하고 "소리 켜기" 버튼을 띄운다.
    (외부 주소에서만 동작. 아티팩트 안에서는 유튜브로 연결) */
 if (EMBED) {
+  let api = null, player = null;
+  const loadApi = () => api || (api = Promise.race([
+    new Promise((res) => {
+      window.onYouTubeIframeAPIReady = () => res(true);
+      const t = document.createElement("script"); t.src = "https://www.youtube.com/iframe_api"; t.onerror = () => res(false);
+      document.head.appendChild(t);
+    }),
+    new Promise((res) => setTimeout(() => res(false), 5000)),
+  ]));
+  loadApi();
   const stop = () => {
     if (!playing) return;
-    playing.querySelector("iframe")?.remove();
+    try { player && player.destroy(); } catch {}
+    player = null;
+    playing.querySelectorAll(".yt, iframe, .unmute").forEach((n) => n.remove());
     playing.classList.remove("playing");
     playing = null;
+  };
+  const plain = (frame, w, q) => { /* API를 못 불러오면 기본 플레이어로 */
+    const f = document.createElement("iframe");
+    f.src = `https://www.youtube.com/embed/${w.id}?${q}`; f.title = w.title;
+    f.allow = "autoplay; encrypted-media; picture-in-picture; fullscreen"; f.allowFullscreen = true;
+    f.referrerPolicy = "strict-origin-when-cross-origin";
+    frame.appendChild(f);
+  };
+  const play = async (a) => {
+    stop();
+    const w = LIST[+a.dataset.i], frame = a.querySelector(".frame");
+    a.classList.add("playing"); playing = a;
+    requestAnimationFrame(() => a.scrollIntoView({ block: "nearest", behavior: "smooth" }));
+    const vars = { autoplay: 1, rel: 0, playsinline: 1, origin: location.origin };
+    const ok = await loadApi();
+    if (playing !== a) return;
+    if (!ok || !window.YT || !YT.Player) return plain(frame, w, new URLSearchParams(vars));
+    const host = document.createElement("div"); host.className = "yt"; frame.appendChild(host);
+    player = new YT.Player(host, {
+      videoId: w.id, host: "https://www.youtube.com", playerVars: vars,
+      events: {
+        onReady: (e) => {
+          e.target.playVideo();
+          setTimeout(() => {
+            if (playing !== a || !player) return;
+            if ([-1, 2, 5].includes(e.target.getPlayerState())) {
+              e.target.mute(); e.target.playVideo();
+              const b = document.createElement("button");
+              b.type = "button"; b.className = "unmute"; b.textContent = "🔊 소리 켜기";
+              frame.appendChild(b);
+            }
+          }, 1200);
+        },
+      },
+    });
   };
   document.addEventListener("click", (e) => {
     const a = e.target.closest("a.card"); if (!a || e.metaKey || e.ctrlKey || e.shiftKey) return;
     e.preventDefault();
+    const um = e.target.closest(".unmute");
+    if (um) { try { player.unMute(); player.setVolume(100); player.playVideo(); } catch {} um.remove(); return; }
     if (playing === a) return;
-    stop();
-    const w = LIST[+a.dataset.i];
-    const q = new URLSearchParams({ autoplay: "1", rel: "0", playsinline: "1", origin: location.origin });
-    const f = document.createElement("iframe");
-    f.src = `https://www.youtube.com/embed/${w.id}?${q}`;
-    f.title = w.title;
-    f.allow = "autoplay; encrypted-media; picture-in-picture; fullscreen";
-    f.allowFullscreen = true;
-    f.referrerPolicy = "strict-origin-when-cross-origin";
-    a.querySelector(".frame").appendChild(f);
-    a.classList.add("playing");
-    playing = a;
+    play(a);
   });
 }
 </script>
