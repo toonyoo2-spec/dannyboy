@@ -152,6 +152,8 @@ footer { margin-top: 120px; border-top: 1px solid var(--fg); padding-block: 48px
 .hero h1 { animation-delay: .08s; } .featured { animation-delay: .18s; }
 footer .wrap { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px 24px; }
 
+.live-note { display: flex; flex-wrap: wrap; justify-content: center; gap: 4px 12px; padding: 10px max(16px, env(safe-area-inset-right, 0px)) 10px max(16px, env(safe-area-inset-left, 0px)); background: var(--fg); color: var(--bg); font-size: 13.5px; text-align: center; }
+.live-note b { font-family: var(--font-mono); font-weight: 500; text-decoration: underline; text-underline-offset: 3px; overflow-wrap: anywhere; }
 /* 제자리 재생: 썸네일 자리에 플레이어가 들어간다 */
 .frame iframe { position: absolute; inset: 0; z-index: 2; width: 100%; height: 100%; border: 0; background: #000; }
 .card.playing { cursor: default; }
@@ -261,6 +263,13 @@ const yt = (id) => `https://www.youtube.com/watch?v=${id}`;
 const LIST = CATS.flatMap((c) => c.works.map((w) => ({ ...w, cat: c })));
 const playLabel = EMBED ? "재생" : "YouTube에서 보기";
 let playing = null;
+const LIVE = "https://toonyoo2-spec.github.io/dannyboy/";
+if (!EMBED) { /* 아티팩트나 파일로 열면 유튜브 재생이 막혀 있으므로 공개 주소로 안내 */
+  const n = document.createElement("a");
+  n.className = "live-note"; n.href = LIVE; n.target = "_blank"; n.rel = "noopener";
+  n.innerHTML = `<span>영상은 이 주소에서 바로 재생됩니다</span><b>${LIVE.replace("https://", "")} ↗</b>`;
+  document.body.prepend(n);
+}
 
 function card(w, c) {
   const i = LIST.findIndex((x) => x.id === w.id);
